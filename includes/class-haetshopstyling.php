@@ -21,6 +21,8 @@ class HaetShopStyling {
             'body_payment_incomplete' =>  "<p>Thank you for your purchase.</p><p>Please transfer the <strong>amount of</strong> {wpsc_cart_total} to the following account and please mention your <strong>order number {purchase_id} </strong>in the field as reason:</p><p>Account owner<br />Bank<br />IBAN: XX 000000000000000000000<br />BIC/SWIFT: XX00XX00</p><p>Your articles will be delivered immediately after your payment.</p><p>&nbsp;</p>",
             'subject_payment_failed' => __('Your purchase at ','haetshopstyling').get_bloginfo('name'),
             'body_payment_failed' =>  "<p><strong>Your payment could not be processed.</strong></p><p>Please transfer the <strong>amount of</strong> {wpsc_cart_total} to the following account and please mention your <strong>order number {purchase_id} </strong>in the field as reason:</p><p>Account owner<br />Bank<br />IBAN: XX 000000000000000000000<br />BIC/SWIFT: XX00XX00</p><p>Your articles will be delivered immediately after your payment.</p><p>&nbsp;</p>",
+            'subject_tracking' =>  __('Product Tracking Email','haetshopstyling'),
+            'body_tracking' => "<p>Track &amp; Trace means you may track the progress of your parcel with our online parcel tracker, just login to our website and enter the following Tracking ID to view the status of your order.<br /><br /><strong>Tracking ID: {tracking_id}</strong><br /><br /></p>",
             'columntitle' => array(
                                 '',
                                 '',
@@ -68,10 +70,8 @@ class HaetShopStyling {
         $sessionid = $invoice_params['purchase_log']['sessionid']; 
         $options = $this->getOptions();
         
-
         set_transient( "{$sessionid}_pending_email_sent", true, 60 * 60 * 12 );
-
-        
+ 
         $filename = $options['filename'].'-'.$purchase_id.'.pdf';
         $params = $this->getBillingData($purchase_id,$options);
         if( count($params) >0 ){
@@ -158,6 +158,12 @@ class HaetShopStyling {
                             }	
                             if (isset($_POST['haetshopstylingbody_payment_failed'])) {
                                     $options['body_payment_failed'] = $_POST['haetshopstylingbody_payment_failed'];
+                            }
+                            if (isset($_POST['haetshopstylingsubject_tracking'])) {
+                                    $options['subject_tracking'] = $_POST['haetshopstylingsubject_tracking'];
+                            }	
+                            if (isset($_POST['haetshopstylingbody_tracking'])) {
+                                    $options['body_tracking'] = $_POST['haetshopstylingbody_tracking'];
                             }
             }else if ($tab=='invoicecss'){
                             if (isset($_POST['haetshopstylingcss'])) {
@@ -297,7 +303,8 @@ class HaetShopStyling {
             $params[]= array('unique_name'=>'wpsc_cart_tax','value'=>wpsc_cart_tax());
             $params[]= array('unique_name'=>'wpsc_coupon_amount','value'=>wpsc_coupon_amount());
             $params[]= array('unique_name'=>'wpsc_cart_total','value'=>wpsc_cart_total());
-
+            $params[]= array('unique_name'=>'tracking_id','value'=>wpsc_purchlogitem_trackid());
+            
             $i=0;
             while( $i<count($params) ){
             $params[$i]['value'] = $params[$i]['value'];
@@ -414,7 +421,10 @@ class HaetShopStyling {
                     $message =  stripslashes(str_replace('\\&quot;','',$options['body_payment_incomplete'])) ;
                     $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_incomplete']));
                     break;
-		//case get_option( 'wpsc_trackingid_subject' ): //tracking id als Placeholder anlegen
+		case get_option( 'wpsc_trackingid_subject' ): 
+                    $message =  stripslashes(str_replace('\\&quot;','',$options['body_tracking'])) ;
+                    $subject = stripslashes(str_replace('\\&quot;','',$options['subject_tracking']));
+                    break;
 		//case __( 'The administrator has unlocked your file', 'wpsc' ):		
 	}
         

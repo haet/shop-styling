@@ -56,7 +56,10 @@
                             'fieldvalue' => 'wpsc_cart_total',
                             'fieldname'  => '&gt; '.__('Total price','haetshopstyling')
                             );      
-        
+        $placeholders[] = array(
+                            'fieldvalue' => 'tracking_id',
+                            'fieldname'  => '&gt; '.__('Tracking ID','haetshopstyling')
+                            );
                             
                                                         
 	foreach ( $form_fields as $form_field ){

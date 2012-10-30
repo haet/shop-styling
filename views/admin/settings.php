@@ -106,18 +106,18 @@
                           </td>
                       </tr>
                   </tbody>
-              </table>               
-                 <?php 
-                 
-                 wp_editor(stripslashes(str_replace('\\&quot;','',$options['body_payment_successful'])),'haetshopstylingbody_payment_successful',array(
-                        'media_buttons'=>false,
-                        'tinymce' => array(
-                                'theme_advanced_buttons3' => 'invoicefields',
-                                'remove_linebreaks' => false
-                            )
+                </table>               
+                <?php 
+
+                wp_editor(stripslashes(str_replace('\\&quot;','',$options['body_payment_successful'])),'haetshopstylingbody_payment_successful',array(
+                    'media_buttons'=>false,
+                    'tinymce' => array(
+                            'theme_advanced_buttons3' => 'invoicefields',
+                            'remove_linebreaks' => false
                         )
-                     );
-                 ?>
+                    )
+                    );
+                ?>
                 
                 <hr/>
                 
@@ -131,18 +131,18 @@
                           </td>
                       </tr>
                   </tbody>
-              </table>               
-                 <?php 
-                 
-                 wp_editor(stripslashes(str_replace('\\&quot;','',$options['body_payment_incomplete'])),'haetshopstylingbody_payment_incomplete',array(
-                        'media_buttons'=>false,
-                        'tinymce' => array(
-                                'theme_advanced_buttons3' => 'invoicefields',
-                                'remove_linebreaks' => false
-                            )
+                </table>               
+                <?php 
+
+                wp_editor(stripslashes(str_replace('\\&quot;','',$options['body_payment_incomplete'])),'haetshopstylingbody_payment_incomplete',array(
+                    'media_buttons'=>false,
+                    'tinymce' => array(
+                            'theme_advanced_buttons3' => 'invoicefields',
+                            'remove_linebreaks' => false
                         )
-                     );
-                 ?>
+                    )
+                    );
+                ?>
               
                 <hr/>
                 
@@ -156,10 +156,35 @@
                           </td>
                       </tr>
                   </tbody>
-              </table>               
+                </table>               
                  <?php 
                  
                  wp_editor(stripslashes(str_replace('\\&quot;','',$options['body_payment_failed'])),'haetshopstylingbody_payment_failed',array(
+                        'media_buttons'=>false,
+                        'tinymce' => array(
+                                'theme_advanced_buttons3' => 'invoicefields',
+                                'remove_linebreaks' => false
+                            )
+                        )
+                     );
+                 ?>  
+                
+                <hr/>
+                
+                <h2><?php _e('Email Content - Track and Trace Email','haetshopstyling'); ?></h2>
+                <table class="form-table">
+                  <tbody>
+                      <tr valign="top">
+                          <th scope="row"><label for="haetshopstylingsubject_tracking"><?php _e('Email subject','haetshopstyling'); ?></label></th>
+                          <td>
+                              <input type="text" class="regular-text" id="haetshopstylingsubject_tracking" name="haetshopstylingsubject_tracking" value="<?php echo $options['subject_tracking']; ?>">
+                          </td>
+                      </tr>
+                  </tbody>
+                </table>               
+                 <?php 
+                 
+                 wp_editor(stripslashes(str_replace('\\&quot;','',$options['body_tracking'])),'haetshopstylingbody_tracking',array(
                         'media_buttons'=>false,
                         'tinymce' => array(
                                 'theme_advanced_buttons3' => 'invoicefields',
