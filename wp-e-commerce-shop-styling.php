@@ -45,7 +45,7 @@ function add_haetshopstyling_adminpage() {
 			return;
 		}
 		if (function_exists('add_options_page')) {
-                    add_options_page(__('branding your store','haetshopstyling'), __('Store branding','haetshopstyling'), 'manage_options', basename(__FILE__), array(&$wp_haetshopstyling, 'printAdminPage'));
+                    add_options_page(__('style your store','haetshopstyling'), __('Shop styling','haetshopstyling'), 'manage_options', basename(__FILE__), array(&$wp_haetshopstyling, 'printAdminPage'));
 		}
 }
 	

@@ -37,23 +37,23 @@
                             'fieldname'  => '&gt; '.__('invoice number','haetshopstyling')
                             );
         $placeholders[] = array(
-                            'fieldvalue' => 'wpsc_cart_shipping',
+                            'fieldvalue' => 'total_shipping',
                             'fieldname'  => '&gt; '.__('Total shipping','haetshopstyling')
                             );
         $placeholders[] = array(
-                            'fieldvalue' => 'wpsc_cart_total_widget',
+                            'fieldvalue' => 'total_product_price',
                             'fieldname'  => '&gt; '.__('Total product price','haetshopstyling')
                             );  
         $placeholders[] = array(
-                            'fieldvalue' => 'wpsc_cart_tax',
+                            'fieldvalue' => 'total_tax',
                             'fieldname'  => '&gt; '.__('Total tax','haetshopstyling')
                             );  
         $placeholders[] = array(
-                            'fieldvalue' => 'wpsc_coupon_amount',
+                            'fieldvalue' => 'coupon_amount',
                             'fieldname'  => '&gt; '.__('Discount','haetshopstyling')
                             );                                                                                                 
         $placeholders[] = array(
-                            'fieldvalue' => 'wpsc_cart_total',
+                            'fieldvalue' => 'cart_total',
                             'fieldname'  => '&gt; '.__('Total price','haetshopstyling')
                             );      
         $placeholders[] = array(
