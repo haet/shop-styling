@@ -3,6 +3,25 @@
         .wp-editor-wrap{
             max-width:800px;
         }
+        
+        #products-table{
+            width:100%;
+            border-collapse:collapse;
+            padding-bottom:1px;
+            border-bottom:0.1pt solid #606060;
+        }
+        #products-table th{
+            text-align:right;
+            border-bottom:0.2pt solid #606060;
+        }
+        #products-table td{
+            text-align:right;
+            border-bottom:0.1pt solid #606060;
+        }
+
+        #products-table .product_name{
+            text-align:left;
+        }
     </style>
 <div class=wrap>
     <h2><?php _e('Style your store','haetshopstyling'); ?></h2>
@@ -43,7 +62,9 @@
                 <h2><?php _e('Invoice Template','haetshopstyling'); ?></h2>
                                 
                  <?php 
-                 
+                 if(ini_get('allow_url_fopen')==0){
+                     //do soemthing
+                 }
                  wp_editor(stripslashes(str_replace('\\&quot;','',$options['template'])),'haetshopstylingtemplate',array(
                         'media_buttons'=>true,
                         'tinymce' => array(
@@ -74,6 +95,57 @@
 ?>
       
     <h2><?php _e('Products table','haetshopstyling'); ?></h2>   
+    <p><?php _e('Customize the fields and headlines for your products table. This table will show up on your invoice and your mails instead of the according placeholder.','haetshopstyling'); ?></p>
+    <p><?php _e('At the moment your table content will look like this, but the formatting will be different because of your stylesheets.','haetshopstyling'); ?></p>
+    <?php
+            $products_table = '<table id="products-table" style="width:600px">';
+            $products_table .= '<tr>';
+            $col=1;
+            foreach ($options["columnfield"] AS $field){
+                if($field!='')
+                    $products_table .= "<th  class='$field'>".$options["columntitle"][$col]."</th>";
+                $col++;
+            }
+            $products_table .= '</tr>';
+            $row=0;
+
+
+            $items=array();
+            $items[0]=array(
+                'item_number'       => '1',
+                'product_name'      => 'beautiful red apple',
+                'product_quantity'  => '3',
+                'product_price'     => '$ 2.20',
+                'product_pnp'       => '$ 1.00',
+                'price_without_tax' => '$ 2.00',
+                'price_sum'         => '$ 6.60',
+                'price_sum_without_tax' => '$ 6.00',
+                'product_gst'       => '10 %',
+                'product_tax_charged'=>'$ 0.60'
+            ); 
+            $items[1]=array(
+                'item_number'       => '2',
+                'product_name'      => 'banana',
+                'product_quantity'  => '2',
+                'product_price'     => '$ 1.10',
+                'product_pnp'       => '$ 0.50',
+                'price_without_tax' => '$ 1.00',
+                'price_sum'         => '$ 2.20',
+                'price_sum_without_tax' => '$ 2.00',
+                'product_gst'       => '10 %',
+                'product_tax_charged'=>'$ 0.20'
+            ); 
+            foreach ($items AS $item){
+                foreach ($options["columnfield"] AS $field){
+                    if($field!='')
+                        $products_table .= "<td class='$field'>".$item[$field]."</td>";
+                }
+                $products_table .= '</tr>';     
+            }
+            $products_table .= '</table><p>&nbsp;</p>';
+            echo $products_table; 
+?>
+    
     <table style="border:1px solid #ccc; border-collapse: collapse">
             <tbody>
                 <tr valign="top">
@@ -90,7 +162,7 @@
                 <?php endfor; ?>
             </tbody>
         </table>
-
+ 
 <?php 
             break;
             case 'mailcontent' :
@@ -296,16 +368,6 @@
                     <td>
                         <input type="text" class="regular-text" id="haetshopstylingpaper" name="haetshopstylingfilename" value="<?php echo $options['filename']; ?>">
                         <span class="description"><?php _e('&lt;filename&gt;&lt;invoicenumber&gt;.pdf','haetshopstyling'); ?></span>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row"><label for="haetshopstylingreplacependingemail"><?php _e('Replace "order pending" Email','haetshopstyling'); ?></label></th>
-                    <td>
-                        <select id="haetshopstylingreplacependingmail" name="haetshopstylingreplacependingmail" >
-                          <option value="yes" <?php echo ($options['replacependingmail']=='yes'?'selected':''); ?> ><?php _e('yes','haetshopstyling'); ?></option>
-                          <option value="no" <?php echo ($options['replacependingmail']=='no'?'selected':''); ?> ><?php _e('no','haetshopstyling'); ?></option>
-                        </select>
-                        <span class="description"><?php _e('replace the default email from wp e-commerce.','haetshopstyling'); ?></span>
                     </td>
                 </tr>
             </tbody>

@@ -25,7 +25,7 @@ class HaetShopStyling {
             'body_tracking' => "<p>Track &amp; Trace means you may track the progress of your parcel with our online parcel tracker, just login to our website and enter the following Tracking ID to view the status of your order.<br /><br /><strong>Tracking ID: {tracking_id}</strong><br /><br /></p>",
             'columntitle' => array(
                                 '',
-                                ' ',
+                                '#',
                                 __('Product','haetshopstyling'),
                                 __('Quantity','haetshopstyling'),
                                 __('Price single','haetshopstyling'),
@@ -138,6 +138,11 @@ class HaetShopStyling {
             }else if ($tab=='products'){
                             if (isset($_POST['columntitle'])) {
                                     $options['columntitle'] = $_POST['columntitle'];
+                                    for($i=1; $i<=count($options['columntitle']); $i++){
+                                        if (!isset($options['columntitle'][$i]) || $options['columntitle'][$i]=='')
+                                            $options['columntitle'][$i]=' ';
+                                        
+                                    }
                                     $options['columnfield'] = $_POST['columnfield'];
                             }	
             }else if ($tab=='mailcontent'){
@@ -189,9 +194,6 @@ class HaetShopStyling {
                             }
                             if (isset($_POST['haetshopstylingfilename'])) {
                                     $options['filename'] = $_POST['haetshopstylingfilename'];
-                            }
-                            if (isset($_POST['haetshopstylingreplacependingmail'])) {
-                                    $options['replacependingmail'] = $_POST['haetshopstylingreplacependingmail'];
                             }
 
             }
@@ -330,7 +332,6 @@ class HaetShopStyling {
 
             foreach ($items AS $item){
                 $item['item_number']=$row+1;
-                $item['product_name'] = $item['product_name'];
                 $item['price_without_tax']= $this->currencyDisplay( $item['product_price']*$item['product_quantity']-$item['product_tax_charged']/$item['product_quantity'] );
                 $item['price_sum']= $this->currencyDisplay( $item['product_price']*$item['product_quantity'] ) ;
                 $item['price_sum_without_tax']= $this->currencyDisplay( $item['price_sum']-$item['product_tax_charged'] );
