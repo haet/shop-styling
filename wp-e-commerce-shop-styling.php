@@ -31,10 +31,12 @@ if (isset($wp_haetshopstyling)) {
 	add_action('admin_menu', 'add_haetshopstyling_adminpage');
 	add_action('activate_haetshopstyling/haetshopstyling.php',  array(&$wp_haetshopstyling, 'init'));
         add_filter('wpsc_purchlogitem_links_start',array(&$wp_haetshopstyling, 'showLogInvoiceLink'));
+        //add_action('wpsc_confirm_checkout', array(&$wp_haetshopstyling, 'sendInvoiceMail'));
         add_action('wpsc_transaction_result_cart_item', array(&$wp_haetshopstyling, 'sendInvoiceMail'));
         add_filter('wp_mail',array(&$wp_haetshopstyling, 'styleMail'),12,1);
-        
-        //add_filter('wpsc_transaction_result_message_html',array(&$wp_haetshopstyling, 'transactionResultsPage'));
+        //if ( version_compare( WPSC_VERSION, '3.8.9', '>=' ) )
+        add_filter('wpsc_get_transaction_html_output',array(&$wp_haetshopstyling, 'transactionResultsFilter'),10,1);
+        add_action( 'wpsc_update_purchase_log_status', array(&$wp_haetshopstyling, 'setGlobalPurchaseId'), 9, 4 );
 }
 
 

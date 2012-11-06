@@ -5,8 +5,16 @@
     $body=  stripslashes(str_replace('\\&quot;','',$options['template'])) ;
     $footer=  stripslashes(str_replace('\\&quot;','',$options['footer'])) ;
 
-    
-    
+
+    $url = $_SERVER['HTTP_HOST'];
+    $rel_address = str_replace($url2, '', str_replace($url1, '',HAET_SHOP_STYLING_URL) );
+    $base_path = str_replace($rel_address,'',HAET_SHOP_STYLING_PATH);
+
+    $body = preg_replace('#\<img(.*)src=\".*'.$url.'(.*)\"(.*)\>#Uis', '<img$1src="'.$base_path.'$2"$3\>', $body);
+    $body = preg_replace('#\<img(.*)src=\'.*'.$url.'(.*)\'(.*)\>#Uis', '<img$1src="'.$base_path.'$2"$3\>', $body);
+    $footer = preg_replace('#\<img(.*)src=\".*'.$url.'(.*)\"(.*)\>#Uis', '<img$1src="'.$base_path.'$2"$3\>', $footer);
+    $footer = preg_replace('#\<img(.*)src=\'.*'.$url.'(.*)\'(.*)\>#Uis', '<img$1src="'.$base_path.'$2"$3\>', $footer);
+
     foreach ($params AS $param){
         $body = str_replace('{'.$param["unique_name"].'}', $param['value'], $body);
         $footer = str_replace('{'.$param["unique_name"].'}', $param['value'], $footer);

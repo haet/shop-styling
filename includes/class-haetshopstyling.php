@@ -10,7 +10,7 @@ class HaetShopStyling {
     
     function getOptions() {
 	 $options = array(
-            'template' => "<p>&nbsp;</p><p><img class=\"alignnone size-full wp-image-68\" title=\"logo\" src=\"".HAET_SHOP_STYLING_URL."/images/logo.jpg\" alt=\"\" width=\"250\" height=\"49\" /></p><p style=\"text-align: right;\">Companyname </p><p style=\"text-align: right;\">adressline 1</p><p style=\"text-align: right;\">12345 city</p><p style=\"text-align: right;\"> </p><p style=\"text-align: left;\">{billingfirstname} {billinglastname}</p><p style=\"text-align: left;\">{billingaddress}</p><p style=\"text-align: left;\">{billingpostcode} {billingcity}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Invoice: {purchase_id}</p><p style=\"text-align: right;\">Date: {date}</p><p style=\"text-align: right;\"> </p><h1 style=\"text-align: left;\">Invoice</h1><p style=\"text-align: left;\">{#productstable#}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Products total: {total_product_price}</p><p style=\"text-align: right;\">Shipping total: {total_shipping}</p><p style=\"text-align: right;\">Tax: {total_tax}</p><p style=\"text-align: right;\">Discount: {coupon_amount}</p><p style=\"text-align: right;\"><strong>Total: {cart_total}</strong></p><p style=\"text-align: right;\"> </p><p style=\"text-align: right;\"> </p><p style=\"text-align: center;\">Thank you for your purchase</p><p>&nbsp;</p>",
+            'template' => "<p>&nbsp;</p><p><img class=\"alignnone size-full wp-image-68\" title=\"logo\" src=\"".HAET_SHOP_STYLING_URL."images/logo.jpg\" alt=\"\" width=\"250\" height=\"49\" /></p><p style=\"text-align: right;\">Companyname </p><p style=\"text-align: right;\">adressline 1</p><p style=\"text-align: right;\">12345 city</p><p style=\"text-align: right;\"> </p><p style=\"text-align: left;\">{billingfirstname} {billinglastname}</p><p style=\"text-align: left;\">{billingaddress}</p><p style=\"text-align: left;\">{billingpostcode} {billingcity}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Invoice: {purchase_id}</p><p style=\"text-align: right;\">Date: {date}</p><p style=\"text-align: right;\"> </p><h1 style=\"text-align: left;\">Invoice</h1><p style=\"text-align: left;\">{#productstable#}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Products total: {total_product_price}</p><p style=\"text-align: right;\">Shipping total: {total_shipping}</p><p style=\"text-align: right;\">Tax: {total_tax}</p><p style=\"text-align: right;\">Discount: {coupon_amount}</p><p style=\"text-align: right;\"><strong>Total: {cart_total}</strong></p><p style=\"text-align: right;\"> </p><p style=\"text-align: right;\"> </p><p style=\"text-align: center;\">Thank you for your purchase</p><p>&nbsp;</p>",
             'footer' => "<p style=\"text-align: center;\">your company | adressline 1 | 12345 city | office@yourcompany.net</p><p style=\"text-align: center;\">Bank account no.: 0000000000000000000000</p>",
             'css' => "body {\nmargin: 30px;\n}\n/* included unicode fonts:\n*  serif: 'dejavu serif'\n*  sans: 'devavu sans'\n* add your own fonts: http://code.google.com/p/dompdf/wiki/CPDFUnicode#Load_a_font_supporting_your_characters_into_DOMPDF\n*/\nbody, td, th {\nfont-family: 'dejavu serif';\nfont-size: 10px;\n}\np{\nheight:1em;\n}\n\n#products-table{\nwidth:100%;\nborder-collapse:collapse;\npadding-bottom:1px;\nborder-bottom:0.1pt solid #606060;\n}\n#products-table th{\ntext-align:right;\nborder-bottom:0.2pt solid #606060;\n}\n#products-table td{\ntext-align:right;\nborder-bottom:0.1pt solid #606060;\n}\n\n#products-table .product_name{\ntext-align:left;\n}\n/* keeps the footer on its place because dompdf has problems with absolute and fixed positioning*/\n#content-table{\nwidth:100%;\nmargin-top:0;\n}\n#invoice-content{\nheight:230mm;\nvertical-align:top;\n}\n#invoice-footer{\ncolor:#444;\n}\n/* fix for displaying prices with EURO sign */\n.pricedisplay{\nmargin-right:5px;\n}",
             'paper' => 'a4',
@@ -68,9 +68,11 @@ class HaetShopStyling {
 
         $purchase_id=$invoice_params['purchase_id'];
         $sessionid = $invoice_params['purchase_log']['sessionid']; 
+        //global $purchase_log;
+        //$sessionid = $purchase_log['sessionid']; 
         $options = $this->getOptions();
         
-        set_transient( "{$sessionid}_pending_email_sent", true, 60 * 60 * 12 );
+        set_transient( "{$sessionid}_pending_email_sent", true, 60 * 60 * 24 * 30);
  
         $filename = $options['filename'].'-'.$purchase_id.'.pdf';
         $params = $this->getBillingData($purchase_id,$options);
@@ -88,35 +90,40 @@ class HaetShopStyling {
         }
         error_reporting(E_ERROR); //avoid "is_a(): Deprecated" warning in PHP-Versions between 5.0 and 5.3
         
-        $email = wpsc_get_buyers_email($invoice_params['purchase_log']['id']);
-        if ( !empty($email) && !get_transient( "{$sessionid}_invoice_email_sent") ) {
-            add_filter( 'wp_mail_from', 'wpsc_replace_reply_address', 0 );
-            add_filter( 'wp_mail_from_name', 'wpsc_replace_reply_name', 0 );
-            add_filter( 'wp_mail_content_type', create_function('', 'return "text/html";'));
-            $attachments=array(HAET_SHOP_STYLING_PATH."invoices/".$filename);
+        if ( !version_compare( WPSC_VERSION, '3.8.9', '>=' ) ){
+            $email = wpsc_get_buyers_email($invoice_params['purchase_log']['id']);
+            if ( !empty($email) && !get_transient( "{$purchase_id}_invoice_email_sent") ) {
+                add_filter( 'wp_mail_from', 'wpsc_replace_reply_address', 0 );
+                add_filter( 'wp_mail_from_name', 'wpsc_replace_reply_name', 0 );
+                add_filter( 'wp_mail_content_type', create_function('', 'return "text/html";'));
+                $attachments=array(HAET_SHOP_STYLING_PATH."invoices/".$filename);
 
-            if($invoice_params['purchase_log']['processed']==2){ // payment incomplete or manual payment
-                $body =  stripslashes(str_replace('\\&quot;','',$options['body_payment_incomplete'])) ;
-                $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_incomplete'])) ;
-            }else if($invoice_params['purchase_log']['processed']==1){ // payment failed
-                $body =  stripslashes(str_replace('\\&quot;','',$options['body_payment_failed'])) ;
-                $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_failed'])) ;
-            }else if($invoice_params['purchase_log']['processed']==3){ // payment successful
-                $body =  stripslashes(str_replace('\\&quot;','',$options['body_payment_successful'])) ;
-                $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_successful'])) ;
-            }
-            
-            foreach ($params AS $param){
-                $body = str_replace('{'.$param["unique_name"].'}', $param['value'], $body);
-            }
-            //$body = stripslashes(str_replace('\\&quot;','',$options['emailbody']));
+                if($invoice_params['purchase_log']['processed']==2){ // payment incomplete or manual payment
+                    $body =  stripslashes(str_replace('\\&quot;','',$options['body_payment_incomplete'])) ;
+                    $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_incomplete'])) ;
+                }else if($invoice_params['purchase_log']['processed']==1){ // payment failed
+                    $body =  stripslashes(str_replace('\\&quot;','',$options['body_payment_failed'])) ;
+                    $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_failed'])) ;
+                }else if($invoice_params['purchase_log']['processed']==3){ // payment successful
+                    $body =  stripslashes(str_replace('\\&quot;','',$options['body_payment_successful'])) ;
+                    $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_successful'])) ;
+                }
 
-            wp_mail( $email, $subject, $body,'',$attachments);
-            wp_mail( get_bloginfo('admin_email'), $subject, $body,'',$attachments);
-            set_transient( "{$sessionid}_invoice_email_sent", true, 60 * 60 * 24 * 30 );
-            add_filter('wp_mail_content_type',create_function('', 'return "text";'));        
-        } 
-        $this->transactionResultsPage($options,$params);
+                foreach ($params AS $param){
+                    $body = str_replace('{'.$param["unique_name"].'}', $param['value'], $body);
+                }
+                //$body = stripslashes(str_replace('\\&quot;','',$options['emailbody']));
+
+                wp_mail( $email, $subject, $body,'',$attachments);
+                wp_mail( get_bloginfo('admin_email'), $subject, $body,'',$attachments);
+                set_transient( "{$purchase_id}_invoice_email_sent", true, 60 * 60 * 24 * 30 );
+
+                add_filter('wp_mail_content_type',create_function('', 'return "text";'));        
+            } 
+        
+        
+            $this->transactionResultsPage($options,$params);
+        }
     }
     
     
@@ -373,9 +380,11 @@ class HaetShopStyling {
         return $wpdb->get_results($form_sql,ARRAY_A);
     }
     
+    /* use this function up to wpsc 3.8.5 */ 
     function transactionResultsPage($options, $params){
         global $message_html;
         global $purchase_log;
+        
         if($purchase_log['processed']==2) // payment incomplete or manual payment
             $message_html = stripslashes(str_replace('\\&quot;','',$options['resultspage_incomplete'])) ;
         else if($purchase_log['processed']==1) // payment failed
@@ -390,6 +399,34 @@ class HaetShopStyling {
         // TODO den StandardText aus Zeile 362 wpsc-transaction-result-functions.php entfernen
     }
     
+    /* use this function for wpsc 3.8.9 */
+    function transactionResultsFilter($output, $notification){
+        $purchase_log = new WPSC_Purchase_Log( $_GET['sessionid'], 'sessionid' );
+        $options = $this->getOptions();
+        $params = $this->getBillingData($purchase_log->get('id'),$options);
+        
+//        WPSC_Purchase_Log::INCOMPLETE_SALE  //= 1;
+//	const ORDER_RECEIVED   = 2;
+//	const ACCEPTED_PAYMENT = 3;
+//	const JOB_DISPATCHED   = 4;
+//	const CLOSED_ORDER     = 5;
+//	const PAYMENT_DECLINED = 6;
+//	const REFUNDED         = 7;
+//	const REFUND_PENDING   = 8;
+        if($purchase_log->get('processed')==2) // payment incomplete or manual payment
+            $message_html = stripslashes(str_replace('\\&quot;','',$options['resultspage_incomplete'])) ;
+        else if($purchase_log->get('processed')==1) // payment failed
+            $message_html = stripslashes(str_replace('\\&quot;','',$options['resultspage_failed'])) ;
+        else if($purchase_log->get('processed')==3) // payment successful
+            $message_html = stripslashes(str_replace('\\&quot;','',$options['resultspage_successful'])) ;
+        
+        foreach ($params AS $param){
+            $message_html = str_replace('{'.$param["unique_name"].'}', $param['value'], $message_html);
+        }
+        return $message_html;
+    }
+    
+    
     
     function styleMail($vars){
         $options = $this->getOptions();
@@ -399,23 +436,33 @@ class HaetShopStyling {
             $purchase_id=$_POST['id'];
         } else if(isset($_GET['id'])){ 
             $purchase_id=$_GET['id'];  
-            if(isset($_GET['email_buyer_id'])){ //if "resend receipt to buyer"
-                $filename = $options['filename'].'-'.$purchase_id.'.pdf';
-                if ( file_exists(HAET_SHOP_STYLING_PATH."invoices/".$filename) )
-                    $attachments=array(HAET_SHOP_STYLING_PATH."invoices/".$filename);
-            }
         }else if(isset($_POST['log_id'])){ //tracking mail
             $purchase_id=$_POST['log_id'];
+        }else if(isset($_GET['sessionid'])){ //transaction results
+            $purchase_log = new WPSC_Purchase_Log( $_GET['sessionid'], 'sessionid' );
+            $purchase_id=$purchase_log->get('id');
+        }else {
+            global $haet_purchase_id; //custom global for transaction result mail
+            $purchase_id = $haet_purchase_id;
         }
+         
+	
         
         if($purchase_id){
             $params = $this->getBillingData($purchase_id,$options);
+            if(isset($_GET['email_buyer_id']) || !get_transient( "{$purchase_id}_invoice_email_sent") ){ //if "resend receipt to buyer"
+                $filename = $options['filename'].'-'.$purchase_id.'.pdf';
+                if ( file_exists(HAET_SHOP_STYLING_PATH."invoices/".$filename) ){
+                    $attachments=array(HAET_SHOP_STYLING_PATH."invoices/".$filename);
+                    set_transient( "{$purchase_id}_invoice_email_sent", true, 60 * 60 * 24 * 30 );
+                }
+            }
         }
         /*
          * the idea of the following switch statement is taken from http://schwambell.com/wp-e-commerce-style-email-plugin/ by Jakob Schwartz
          */
         switch($subject) {
-		//case __( 'Purchase Report', 'wpsc' ): //not used -> Admin receives a copy of the invoice mail
+		//case __( 'Purchase Report', 'wpsc' ): //not used -> Admin mail is unformatted
 		case __( 'Purchase Receipt', 'wpsc' ): //sent when changing state to "accepted payment"
                     $message =  stripslashes(str_replace('\\&quot;','',$options['body_payment_successful'])) ;
                     $subject = stripslashes(str_replace('\\&quot;','',$options['subject_payment_successful'])) ;
@@ -439,26 +486,20 @@ class HaetShopStyling {
             }
         }
         $message = str_replace('{#mailcontent#}',nl2br($message),$options['mailtemplate']);
-        $message = stripslashes(str_replace('\\&quot;','',$message));
+        $message = stripslashes(str_replace('\\&quot;','',$message)).'#'.$haet_purchase_id;
+        
         add_filter( 'wp_mail_content_type', create_function('', 'return "text/html";'));
         add_filter( 'wp_mail_from', 'wpsc_replace_reply_address', 0 );
         add_filter( 'wp_mail_from_name', 'wpsc_replace_reply_name', 0 );
         return compact( 'to', 'subject', 'message', 'headers', 'attachments' );
     }
-    /*function transactionResultsPageIncomplete($options, $params){
-        global $message_html;
-        global $purchase_log;
-        $purchase_id=$purchase_log['id'];
-        $sessionid = $purchase_log['sessionid']; 
-        $options = $this->getOptions();
-        $params = $this->getBillingData($purchase_id,$options);
-        
-        $message_html = stripslashes(str_replace('\\&quot;','',$options['resultspage_unpaid'])) ;
-        foreach ($params AS $param){
-            $message_html = str_replace('{'.$param["unique_name"].'}', $param['value'], $message_html);
-        }
-    }*/
     
+
+    /**
+     * preview the invoice
+     * @global type $wpdb
+     * @param type $purchase_id 
+     */
     function previewInvoice($purchase_id=null){
         global $wpdb;
         //$purchase_id=17;
@@ -481,14 +522,27 @@ class HaetShopStyling {
         $params = $this->getBillingData($purchase_id,$options,true);
         include HAET_SHOP_STYLING_PATH.'views/admin/invoice.php';
         $html = $this->fixCharacters($html);
-        //$tmpfile=HAET_SHOP_STYLING_PATH."invoices/".uniqid();
-        //file_put_contents($tmpfile,$html);
+        $tmpfile=HAET_SHOP_STYLING_PATH."invoices/preview.html";
+        file_put_contents($tmpfile,$html);
         require_once(HAET_SHOP_STYLING_PATH.'includes/dompdf/dompdf_config.inc.php');    
         $pdf = new DOMPDF();
         $pdf->set_paper($options['paper']);
         $pdf->load_html($html);
         $pdf->render();
         file_put_contents(HAET_SHOP_STYLING_PATH."invoices/".$filename, $pdf->output());  
+    }
+    
+    /**
+     * define a global variable for the transation result mail
+     * @global type $haet_purchase_id
+     * @param type $id
+     * @param type $status
+     * @param type $old_status
+     * @param type $purchase_log 
+     */
+    function setGlobalPurchaseId( $id, $status, $old_status, $purchase_log ) {
+        global $haet_purchase_id; 
+        $haet_purchase_id = $id;
     }
 }
 
