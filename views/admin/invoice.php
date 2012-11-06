@@ -7,6 +7,8 @@
 
 
     $url = $_SERVER['HTTP_HOST'];
+    $url1 = "http://" . $_SERVER['HTTP_HOST'];
+    $url2 = "https://" . $_SERVER['HTTP_HOST'];
     $rel_address = str_replace($url2, '', str_replace($url1, '',HAET_SHOP_STYLING_URL) );
     $base_path = str_replace($rel_address,'',HAET_SHOP_STYLING_PATH);
 

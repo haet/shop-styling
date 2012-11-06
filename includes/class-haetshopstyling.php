@@ -5,7 +5,20 @@ class HaetShopStyling {
     function HaetShopStyling() { }
     
     function init() {
-		$this->getOptions();
+            $this->getOptions();
+            
+            wp_mkdir_p( HAET_INVOICE_PATH );
+            @ chmod( HAET_INVOICE_PATH, 0775 );
+            if ( !is_file( HAET_INVOICE_PATH . ".htaccess" ) ) {
+                $htaccess = "order deny,allow\n\r";
+                $htaccess .= "deny from all\n\r";
+                $htaccess .= "allow from none\n\r";
+                $filename = HAET_INVOICE_PATH . ".htaccess";
+                $file_handle = @ fopen( $filename, 'w+' );
+                @ fwrite( $file_handle, $htaccess );
+                @ fclose( $file_handle );
+                @ chmod( $file_handle, 0665 );
+            }
 	}
     
     function getOptions() {
@@ -79,14 +92,14 @@ class HaetShopStyling {
         if( count($params) >0 ){
             include HAET_SHOP_STYLING_PATH.'views/admin/invoice.php';
             $html = $this->fixCharacters($html);
-            //$tmpfile=HAET_SHOP_STYLING_PATH."invoices/".uniqid();
+            //$tmpfile=HAET_INVOICE_PATH.uniqid();
             //file_put_contents($tmpfile,$html);
             require_once(HAET_SHOP_STYLING_PATH.'includes/dompdf/dompdf_config.inc.php');    
             $pdf = new DOMPDF();
             $pdf->set_paper($options['paper']);
             $pdf->load_html($html);
             $pdf->render();
-            file_put_contents(HAET_SHOP_STYLING_PATH."invoices/".$filename, $pdf->output());  
+            file_put_contents(HAET_INVOICE_PATH.$filename, $pdf->output());  
         }
         error_reporting(E_ERROR); //avoid "is_a(): Deprecated" warning in PHP-Versions between 5.0 and 5.3
         
@@ -96,7 +109,7 @@ class HaetShopStyling {
                 add_filter( 'wp_mail_from', 'wpsc_replace_reply_address', 0 );
                 add_filter( 'wp_mail_from_name', 'wpsc_replace_reply_name', 0 );
                 add_filter( 'wp_mail_content_type', create_function('', 'return "text/html";'));
-                $attachments=array(HAET_SHOP_STYLING_PATH."invoices/".$filename);
+                $attachments=array(HAET_INVOICE_PATH.$filename);
 
                 if($invoice_params['purchase_log']['processed']==2){ // payment incomplete or manual payment
                     $body =  stripslashes(str_replace('\\&quot;','',$options['body_payment_incomplete'])) ;
@@ -272,7 +285,7 @@ class HaetShopStyling {
         $options = $this->getOptions();
         
         $purchase_id=$_GET['id'];
-        if ( file_exists(HAET_SHOP_STYLING_PATH . '/invoices/'.$options['filename'].'-'.$purchase_id.'.pdf') )
+        if ( file_exists(HAET_INVOICE_PATH.$options['filename'].'-'.$purchase_id.'.pdf') )
             echo '
                 <img src="'.HAET_SHOP_STYLING_URL.'../wp-e-commerce/wpsc-core/images/download.gif'.'">&nbsp;
                 <a href="'.HAET_SHOP_STYLING_URL.'includes/download.php?filename='.$options['filename'].'-'.$purchase_id.'.pdf"> '.__("show invoice",'haetshopstyling').'</a><br><br class="small">
@@ -452,8 +465,8 @@ class HaetShopStyling {
             $params = $this->getBillingData($purchase_id,$options);
             if(isset($_GET['email_buyer_id']) || !get_transient( "{$purchase_id}_invoice_email_sent") ){ //if "resend receipt to buyer"
                 $filename = $options['filename'].'-'.$purchase_id.'.pdf';
-                if ( file_exists(HAET_SHOP_STYLING_PATH."invoices/".$filename) ){
-                    $attachments=array(HAET_SHOP_STYLING_PATH."invoices/".$filename);
+                if ( file_exists(HAET_INVOICE_PATH.$filename) ){
+                    $attachments=array(HAET_INVOICE_PATH.$filename);
                     set_transient( "{$purchase_id}_invoice_email_sent", true, 60 * 60 * 24 * 30 );
                 }
             }
@@ -486,7 +499,7 @@ class HaetShopStyling {
             }
         }
         $message = str_replace('{#mailcontent#}',nl2br($message),$options['mailtemplate']);
-        $message = stripslashes(str_replace('\\&quot;','',$message)).'#'.$haet_purchase_id;
+        $message = stripslashes(str_replace('\\&quot;','',$message));
         
         add_filter( 'wp_mail_content_type', create_function('', 'return "text/html";'));
         add_filter( 'wp_mail_from', 'wpsc_replace_reply_address', 0 );
@@ -522,14 +535,14 @@ class HaetShopStyling {
         $params = $this->getBillingData($purchase_id,$options,true);
         include HAET_SHOP_STYLING_PATH.'views/admin/invoice.php';
         $html = $this->fixCharacters($html);
-        $tmpfile=HAET_SHOP_STYLING_PATH."invoices/preview.html";
+        $tmpfile=HAET_INVOICE_PATH."preview.html";
         file_put_contents($tmpfile,$html);
         require_once(HAET_SHOP_STYLING_PATH.'includes/dompdf/dompdf_config.inc.php');    
         $pdf = new DOMPDF();
         $pdf->set_paper($options['paper']);
         $pdf->load_html($html);
         $pdf->render();
-        file_put_contents(HAET_SHOP_STYLING_PATH."invoices/".$filename, $pdf->output());  
+        file_put_contents(HAET_INVOICE_PATH.$filename, $pdf->output());  
     }
     
     /**

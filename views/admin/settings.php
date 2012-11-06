@@ -64,6 +64,7 @@
                  <?php 
                  if(ini_get('allow_url_fopen')==0){
                      _e('The PHP setting "allow_url_fopen" is disabled so you can\'t include external images. You can use images from this webserver or contact your hosting provider to change the setting.','haetshopstyling');
+                     echo "<br/><br/>";
                  }
                  wp_editor(stripslashes(str_replace('\\&quot;','',$options['template'])),'haetshopstylingtemplate',array(
                         'media_buttons'=>true,

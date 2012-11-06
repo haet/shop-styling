@@ -3,7 +3,7 @@
 Plugin Name: WP E-Commerce shop styling
 Plugin URI: http://haet.at
 Description: Style and generate PDF invoices for your wp e-commerce store, format emails and transaction results
-Version: 0.1
+Version: 0.8
 Author: haet webdevelopment
 Author URI: http://haet.at
 License: CF Commercial-to-GPL License
@@ -14,6 +14,22 @@ License: CF Commercial-to-GPL License
 
 define( 'HAET_SHOP_STYLING_PATH', plugin_dir_path(__FILE__) );
 define( 'HAET_SHOP_STYLING_URL', plugin_dir_url(__FILE__) );
+
+$wp_upload_dir_data = wp_upload_dir();
+// Upload Path
+if ( isset( $wp_upload_dir_data['basedir'] ) )
+        $upload_path = $wp_upload_dir_data['basedir'];
+
+// Upload DIR
+if ( isset( $wp_upload_dir_data['baseurl'] ) )
+        $upload_url = $wp_upload_dir_data['baseurl'];
+
+// SSL Check for URL
+if ( is_ssl() )
+        $upload_url = str_replace( 'http://', 'https://', $upload_url );
+
+define( 'HAET_INVOICE_PATH',$upload_path.'/wpsc-invoices/');
+define( 'HAET_INVOICE_URL',$upload_url.'/wpsc-invoices/');
 
 require HAET_SHOP_STYLING_PATH . 'includes/class-haetshopstyling.php';
 load_plugin_textdomain('haetshopstyling', false, dirname( plugin_basename( __FILE__ ) ) . '/translations' );
@@ -29,7 +45,7 @@ if (class_exists("HaetShopStyling")) {
 //Actions and Filters	
 if (isset($wp_haetshopstyling)) {
 	add_action('admin_menu', 'add_haetshopstyling_adminpage');
-	add_action('activate_haetshopstyling/haetshopstyling.php',  array(&$wp_haetshopstyling, 'init'));
+	register_activation_hook( __FILE__,  array(&$wp_haetshopstyling, 'init'));
         add_filter('wpsc_purchlogitem_links_start',array(&$wp_haetshopstyling, 'showLogInvoiceLink'));
         //add_action('wpsc_confirm_checkout', array(&$wp_haetshopstyling, 'sendInvoiceMail'));
         add_action('wpsc_transaction_result_cart_item', array(&$wp_haetshopstyling, 'sendInvoiceMail'));
