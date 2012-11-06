@@ -52,7 +52,7 @@ if (isset($wp_haetshopstyling)) {
         add_filter('wp_mail',array(&$wp_haetshopstyling, 'styleMail'),12,1);
         //if ( version_compare( WPSC_VERSION, '3.8.9', '>=' ) )
         add_filter('wpsc_get_transaction_html_output',array(&$wp_haetshopstyling, 'transactionResultsFilter'),10,1);
-        add_action( 'wpsc_update_purchase_log_status', array(&$wp_haetshopstyling, 'setGlobalPurchaseId'), 9, 4 );
+        add_action('wpsc_update_purchase_log_status', array(&$wp_haetshopstyling, 'setGlobalPurchaseId'), 9, 4 );
 }
 
 

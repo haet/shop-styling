@@ -288,7 +288,7 @@ class HaetShopStyling {
         if ( file_exists(HAET_INVOICE_PATH.$options['filename'].'-'.$purchase_id.'.pdf') )
             echo '
                 <img src="'.HAET_SHOP_STYLING_URL.'../wp-e-commerce/wpsc-core/images/download.gif'.'">&nbsp;
-                <a href="'.HAET_SHOP_STYLING_URL.'includes/download.php?filename='.$options['filename'].'-'.$purchase_id.'.pdf"> '.__("show invoice",'haetshopstyling').'</a><br><br class="small">
+                <a href="'.HAET_SHOP_STYLING_URL.'includes/download.php?filename='.$options['filename'].'-'.$purchase_id.'.pdf"> '.__("Show Invoice",'haetshopstyling').'</a><br><br class="small">
                 ';
     }
     
