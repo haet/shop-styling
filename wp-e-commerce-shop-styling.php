@@ -3,7 +3,7 @@
 Plugin Name: WP E-Commerce shop styling
 Plugin URI: http://haet.at
 Description: Style and generate PDF invoices for your wp e-commerce store, format emails and transaction results
-Version: 0.8
+Version: 0.9
 Author: haet webdevelopment
 Author URI: http://haet.at
 License: CF Commercial-to-GPL License
@@ -45,9 +45,7 @@ if (class_exists("HaetShopStyling")) {
 //Actions and Filters	
 if (isset($wp_haetshopstyling)) {
 	add_action('admin_menu', 'add_haetshopstyling_adminpage');
-	register_activation_hook( __FILE__,  array(&$wp_haetshopstyling, 'init'));
         add_filter('wpsc_purchlogitem_links_start',array(&$wp_haetshopstyling, 'showLogInvoiceLink'));
-        //add_action('wpsc_confirm_checkout', array(&$wp_haetshopstyling, 'sendInvoiceMail'));
         add_action('wpsc_transaction_result_cart_item', array(&$wp_haetshopstyling, 'sendInvoiceMail'));
         add_filter('wp_mail',array(&$wp_haetshopstyling, 'styleMail'),12,1);
         //if ( version_compare( WPSC_VERSION, '3.8.9', '>=' ) )
@@ -55,7 +53,12 @@ if (isset($wp_haetshopstyling)) {
         add_action('wpsc_update_purchase_log_status', array(&$wp_haetshopstyling, 'setGlobalPurchaseId'), 9, 4 );
 }
 
-
+function init(){
+    if(!isset($wp_haetshopstyling)) 
+        $wp_haetshopstyling = new HaetShopStyling();
+    $wp_haetshopstyling->init();
+}
+register_activation_hook( __FILE__, 'init');
 
 function add_haetshopstyling_adminpage() {
 		global $wp_haetshopstyling;

@@ -101,11 +101,10 @@
     <?php
             $products_table = '<table id="products-table" style="width:600px">';
             $products_table .= '<tr>';
-            $col=1;
-            foreach ($options["columnfield"] AS $field){
-                if($field!='')
-                    $products_table .= "<th  class='$field'>".$options["columntitle"][$col]."</th>";
-                $col++;
+
+            for ($col=1;$col < count($options["columnfield"]); $col++){
+                if($options["columnfield"][$col]!='')
+                    $products_table .= "<th  class='".$options["columnfield"][$col]."'>".$options["columntitle"][$col]."</th>";
             }
             $products_table .= '</tr>';
             $row=0;

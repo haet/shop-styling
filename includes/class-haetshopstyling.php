@@ -5,26 +5,26 @@ class HaetShopStyling {
     function HaetShopStyling() { }
     
     function init() {
-            $this->getOptions();
-            
-            wp_mkdir_p( HAET_INVOICE_PATH );
-            @ chmod( HAET_INVOICE_PATH, 0775 );
-            if ( !is_file( HAET_INVOICE_PATH . ".htaccess" ) ) {
-                $htaccess = "order deny,allow\n\r";
-                $htaccess .= "deny from all\n\r";
-                $htaccess .= "allow from none\n\r";
-                $filename = HAET_INVOICE_PATH . ".htaccess";
-                $file_handle = @ fopen( $filename, 'w+' );
-                @ fwrite( $file_handle, $htaccess );
-                @ fclose( $file_handle );
-                @ chmod( $file_handle, 0665 );
-            }
-	}
+        $this->getOptions();
+
+        wp_mkdir_p( HAET_INVOICE_PATH );
+        @ chmod( HAET_INVOICE_PATH, 0775 );
+        if ( !is_file( HAET_INVOICE_PATH . ".htaccess" ) ) {
+            $htaccess = "order deny,allow\n\r";
+            $htaccess .= "deny from all\n\r";
+            $htaccess .= "allow from none\n\r";
+            $filename = HAET_INVOICE_PATH . ".htaccess";
+            $file_handle = @ fopen( $filename, 'w+' );
+            @ fwrite( $file_handle, $htaccess );
+            @ fclose( $file_handle );
+            @ chmod( $file_handle, 0665 );
+        }
+    }
     
     function getOptions() {
 	 $options = array(
-            'template' => "<p>&nbsp;</p><p><img class=\"alignnone size-full wp-image-68\" title=\"logo\" src=\"".HAET_SHOP_STYLING_URL."images/logo.jpg\" alt=\"\" width=\"250\" height=\"49\" /></p><p style=\"text-align: right;\">Companyname </p><p style=\"text-align: right;\">adressline 1</p><p style=\"text-align: right;\">12345 city</p><p style=\"text-align: right;\"> </p><p style=\"text-align: left;\">{billingfirstname} {billinglastname}</p><p style=\"text-align: left;\">{billingaddress}</p><p style=\"text-align: left;\">{billingpostcode} {billingcity}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Invoice: {purchase_id}</p><p style=\"text-align: right;\">Date: {date}</p><p style=\"text-align: right;\"> </p><h1 style=\"text-align: left;\">Invoice</h1><p style=\"text-align: left;\">{#productstable#}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Products total: {total_product_price}</p><p style=\"text-align: right;\">Shipping total: {total_shipping}</p><p style=\"text-align: right;\">Tax: {total_tax}</p><p style=\"text-align: right;\">Discount: {coupon_amount}</p><p style=\"text-align: right;\"><strong>Total: {cart_total}</strong></p><p style=\"text-align: right;\"> </p><p style=\"text-align: right;\"> </p><p style=\"text-align: center;\">Thank you for your purchase</p><p>&nbsp;</p>",
-            'footer' => "<p style=\"text-align: center;\">your company | adressline 1 | 12345 city | office@yourcompany.net</p><p style=\"text-align: center;\">Bank account no.: 0000000000000000000000</p>",
+            'template' => stripslashes("<p>&nbsp;</p><p><img class=\"alignnone size-full wp-image-68\" title=\"logo\" src=\"".HAET_SHOP_STYLING_URL."images/logo.jpg\" alt=\"\" width=\"250\" height=\"49\" /></p><p style=\"text-align: right;\">Companyname </p><p style=\"text-align: right;\">adressline 1</p><p style=\"text-align: right;\">12345 city</p><p style=\"text-align: right;\"> </p><p style=\"text-align: left;\">{billingfirstname} {billinglastname}</p><p style=\"text-align: left;\">{billingaddress}</p><p style=\"text-align: left;\">{billingpostcode} {billingcity}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Invoice: {purchase_id}</p><p style=\"text-align: right;\">Date: {date}</p><p style=\"text-align: right;\"> </p><h1 style=\"text-align: left;\">Invoice</h1><p style=\"text-align: left;\">{#productstable#}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Products total: {total_product_price}</p><p style=\"text-align: right;\">Shipping total: {total_shipping}</p><p style=\"text-align: right;\">Tax: {total_tax}</p><p style=\"text-align: right;\">Discount: {coupon_amount}</p><p style=\"text-align: right;\"><strong>Total: {cart_total}</strong></p><p style=\"text-align: right;\"> </p><p style=\"text-align: right;\"> </p><p style=\"text-align: center;\">Thank you for your purchase</p><p>&nbsp;</p>"),
+            'footer' => stripslashes("<p style=\"text-align: center;\">your company | adressline 1 | 12345 city | office@yourcompany.net</p><p style=\"text-align: center;\">Bank account no.: 0000000000000000000000</p>"),
             'css' => "body {\nmargin: 30px;\n}\n/* included unicode fonts:\n*  serif: 'dejavu serif'\n*  sans: 'devavu sans'\n* add your own fonts: http://code.google.com/p/dompdf/wiki/CPDFUnicode#Load_a_font_supporting_your_characters_into_DOMPDF\n*/\nbody, td, th {\nfont-family: 'dejavu serif';\nfont-size: 10px;\n}\np{\nheight:1em;\n}\n\n#products-table{\nwidth:100%;\nborder-collapse:collapse;\npadding-bottom:1px;\nborder-bottom:0.1pt solid #606060;\n}\n#products-table th{\ntext-align:right;\nborder-bottom:0.2pt solid #606060;\n}\n#products-table td{\ntext-align:right;\nborder-bottom:0.1pt solid #606060;\n}\n\n#products-table .product_name{\ntext-align:left;\n}\n/* keeps the footer on its place because dompdf has problems with absolute and fixed positioning*/\n#content-table{\nwidth:100%;\nmargin-top:0;\n}\n#invoice-content{\nheight:230mm;\nvertical-align:top;\n}\n#invoice-footer{\ncolor:#444;\n}\n/* fix for displaying prices with EURO sign */\n.pricedisplay{\nmargin-right:5px;\n}",
             'paper' => 'a4',
             'filename' => __('invoice','haetshopstyling'),
@@ -330,8 +330,8 @@ class HaetShopStyling {
             
             $i=0;
             while( $i<count($params) ){
-            $params[$i]['value'] = $params[$i]['value'];
-            $i++;
+                $params[$i]['value'] = $params[$i]['value'];
+                $i++;
             }
 
 
@@ -341,11 +341,9 @@ class HaetShopStyling {
             //GENERATE PRODUCTS TABLE
             $products_table = '<table id="products-table">';
             $products_table .= '<tr>';
-            $col=1;
-            foreach ($options["columnfield"] AS $field){
-                if($field!='')
-                    $products_table .= "<th class='$field'>".$options["columntitle"][$col]."</th>";
-                $col++;
+            for ($col=1;$col < count($options["columnfield"]); $col++){
+                if($options["columnfield"][$col]!='')
+                    $products_table .= "<th class='".$options["columnfield"][$col]."'>".$options["columntitle"][$col]."</th>";
             }
             $products_table .= '</tr>';
             $row=0;
@@ -451,7 +449,7 @@ class HaetShopStyling {
             $purchase_id=$_GET['id'];  
         }else if(isset($_POST['log_id'])){ //tracking mail
             $purchase_id=$_POST['log_id'];
-        }else if(isset($_GET['sessionid'])){ //transaction results
+        }else if ( version_compare( WPSC_VERSION, '3.8.9', '>=' ) && isset($_GET['sessionid'])){ //transaction results 
             $purchase_log = new WPSC_Purchase_Log( $_GET['sessionid'], 'sessionid' );
             $purchase_id=$purchase_log->get('id');
         }else {
