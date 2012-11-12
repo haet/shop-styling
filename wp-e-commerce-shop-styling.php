@@ -53,12 +53,12 @@ if (isset($wp_haetshopstyling)) {
         add_action('wpsc_update_purchase_log_status', array(&$wp_haetshopstyling, 'setGlobalPurchaseId'), 9, 4 );
 }
 
-function init(){
+function haetshopstyling_init(){
     if(!isset($wp_haetshopstyling)) 
         $wp_haetshopstyling = new HaetShopStyling();
     $wp_haetshopstyling->init();
 }
-register_activation_hook( __FILE__, 'init');
+register_activation_hook( __FILE__, 'haetshopstyling_init');
 
 function add_haetshopstyling_adminpage() {
 		global $wp_haetshopstyling;
