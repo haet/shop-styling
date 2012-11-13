@@ -22,10 +22,17 @@
         #products-table .product_name{
             text-align:left;
         }
+        
+        .upgrademessage{
+                margin: 5px 0 15px;
+                background-color: #FFFFE0;
+                border: 1px solid #E6DB55;
+                padding: 0 0.6em;
+        }
     </style>
 <div class=wrap>
-    <h2><?php _e('Style your store','haetshopstyling'); ?></h2>
-    <div id="" class="icon32"><img src="<?php echo HAET_SHOP_STYLING_URL;?>images/icon.png"><br></div>
+    <h2><img src="<?php echo HAET_SHOP_STYLING_URL;?>images/icon.png"><?php _e('Style your store','haetshopstyling'); ?></h2>
+    
     <h2 class="nav-tab-wrapper">
     <?php
         foreach( $tabs as $el => $name ){
@@ -34,14 +41,40 @@
         }
     ?>
     </h2>
-    <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+    
         
 
 <?php 
         switch ( $tab ){
             case 'invoicetemplate' :
-
-                 
+                if(!$this->isAllowed('invoice')){
+                    ?>
+                    <div class="upgrademessage">
+                        <div style="float:right">
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                            <input type="hidden" name="cmd" value="_s-xclick">
+                            <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
+                            <table>
+                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection</td></tr><tr><td><select name="os0">
+                                    <option value="results pages">results pages $5,00 USD</option>
+                                    <option value="PDF invoices">PDF invoices $20,00 USD</option>
+                                    <option value="all together">all together $22,00 USD</option>
+                            </select> </td></tr>
+                            </table>
+                            <input type="hidden" name="currency_code" value="USD">
+                            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+                            </form>
+                        </div>
+                        <h4><?php _e('You have not unlocked this feature yet','haetshopstyling'); ?></h4>
+                        <p><?php _e('You can edit and even preview the invoice but it will not be published to your customers.','haetshopstyling'); ?></p>
+                        <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a>
+                    </div>
+                    <?php
+                }
+                ?>
+                <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                <?php
                 global $wpdb;
                 $sql = "SELECT id
                         FROM `".$wpdb->prefix."wpsc_purchase_logs` 
@@ -52,7 +85,7 @@
                     ?>
                     <h2><?php _e('preview invoice','haetshopstyling'); ?></h2>
                     <p>
-                    <?php _e("This preview shows the invoice layout. It uses data from the latest purchase, but shipping or sum values maybe incorrect or empty.",'haetshopstyling'); ?>
+                    <?php _e("This preview shows the invoice layout. It uses data from the latest purchase, but shipping or sum values may be incorrect or empty.",'haetshopstyling'); ?>
                     </p>
                     <?php
                     echo '<a class="button" id="invoice-preview-link" href="?page=wp-e-commerce-shop-styling.php&tab=previewinvoice"> '.__("preview invoice",'haetshopstyling').'</a><br/><br/>';
@@ -89,12 +122,34 @@
                      );
                  ?>
                  
+         <table class="form-table">
+            <tbody>
+                <tr valign="top">
+                    <th scope="row"><label for="haetshopstylingpaper"><?php _e('Paper','haetshopstyling'); ?></label></th>
+                    <td>
+                        <select  id="haetshopstylingpaper" name="haetshopstylingpaper">
+                          <option value="a4" <?php echo ($options['paper']=="a4"?"selected":""); ?>>a4</option>
+                          <option value="letter" <?php echo ($options['paper']=="letter"?"selected":""); ?>>letter</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="haetshopstylingfilename"><?php _e('Filename','haetshopstyling'); ?></label></th>
+                    <td>
+                        <input type="text" class="regular-text" id="haetshopstylingpaper" name="haetshopstylingfilename" value="<?php echo $options['filename']; ?>">
+                        <span class="description"><?php _e('&lt;filename&gt;&lt;invoicenumber&gt;.pdf','haetshopstyling'); ?></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
                  
 <?php 
             break;
             case 'products':
 ?>
-      
+
+            <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+
     <h2><?php _e('Products table','haetshopstyling'); ?></h2>   
     <p><?php _e('Customize the fields and headlines for your products table. This table will show up on your invoice and your mails instead of the according placeholder.','haetshopstyling'); ?></p>
     <p><?php _e('At the moment your table content will look like this, but the formatting will be different because of your stylesheets.','haetshopstyling'); ?></p>
@@ -121,7 +176,8 @@
                 'price_sum'         => '$ 6.60',
                 'price_sum_without_tax' => '$ 6.00',
                 'product_gst'       => '10 %',
-                'product_tax_charged'=>'$ 0.60'
+                'product_tax_charged'=>'$ 0.60',
+                'download'          => '<img src="'.HAET_SHOP_STYLING_URL.'images/download.png" style="margin-bottom: -5px;" alt="download">'
             ); 
             $items[1]=array(
                 'item_number'       => '2',
@@ -133,7 +189,8 @@
                 'price_sum'         => '$ 2.20',
                 'price_sum_without_tax' => '$ 2.00',
                 'product_gst'       => '10 %',
-                'product_tax_charged'=>'$ 0.20'
+                'product_tax_charged'=>'$ 0.20',
+                'download'          => '<img src="'.HAET_SHOP_STYLING_URL.'images/download.png" style="margin-bottom: -5px;" alt="download">'
             ); 
             foreach ($items AS $item){
                 foreach ($options["columnfield"] AS $field){
@@ -167,7 +224,9 @@
             break;
             case 'mailcontent' :
 ?>
-               
+
+            <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+
                 <h2><?php _e('Email Content - Payment Successful','haetshopstyling'); ?></h2>
                 <table class="form-table">
                   <tbody>
@@ -271,6 +330,8 @@
             case 'invoicecss':
 ?>
 
+    <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                
     <h2><?php _e('Style your invoice','haetshopstyling'); ?></h2>
     <textarea rows="30" cols="40" class="widefat" id="haetshopstylingcss" name="haetshopstylingcss" style="font-family:'Courier New'"><?php echo stripslashes(str_replace('\\&quot;','',$options['css'])); ?></textarea>
 
@@ -278,6 +339,8 @@
             break;
             case 'previewinvoice':
 ?>
+    <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+
 
     <h3><?php _e('generating pdf invoice...','haetshopstyling'); ?></h3>
     <a href="#" onclick="window.history.back()"><?php _e('back','haetshopstyling'); ?></a>
@@ -291,6 +354,8 @@
             break;            
             case 'mailtemplate':
 ?>
+    <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+
 
     <h2><?php _e('Global HTML Mail Template','haetshopstyling'); ?></h2>
     <textarea rows="30" cols="40" class="widefat" id="haetshopstylingmailtemplate" name="haetshopstylingmailtemplate" style="font-family:'Courier New'"><?php echo stripslashes(str_replace('\\&quot;','',$options['mailtemplate'])); ?></textarea>
@@ -310,6 +375,7 @@
             break;        
             case 'resultspage' :
 ?>
+            <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
                 <h2><?php _e('Results Page - payment successful','haetshopstyling'); ?></h2>
                                 
                  <?php 
@@ -348,34 +414,7 @@
                  ?>
 <?php 
             break;        
-            case 'settings':
-?>
 
-    <h2><?php _e('Customize your invoice','haetshopstyling'); ?></h2>
-    <table class="form-table">
-            <tbody>
-                <tr valign="top">
-                    <th scope="row"><label for="haetshopstylingpaper"><?php _e('Paper','haetshopstyling'); ?></label></th>
-                    <td>
-                        <select  id="haetshopstylingpaper" name="haetshopstylingpaper">
-                          <option value="a4" <?php echo ($options['paper']=="a4"?"selected":""); ?>>a4</option>
-                          <option value="letter" <?php echo ($options['paper']=="letter"?"selected":""); ?>>letter</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row"><label for="haetshopstylingfilename"><?php _e('Filename','haetshopstyling'); ?></label></th>
-                    <td>
-                        <input type="text" class="regular-text" id="haetshopstylingpaper" name="haetshopstylingfilename" value="<?php echo $options['filename']; ?>">
-                        <span class="description"><?php _e('&lt;filename&gt;&lt;invoicenumber&gt;.pdf','haetshopstyling'); ?></span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-
-<?php 
-           break;
 }//switch
             
 ?>

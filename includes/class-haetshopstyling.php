@@ -23,7 +23,7 @@ class HaetShopStyling {
     
     function getOptions() {
 	 $options = array(
-            'template' => stripslashes("<p>&nbsp;</p><p><img class=\"alignnone size-full wp-image-68\" title=\"logo\" src=\"".HAET_SHOP_STYLING_URL."images/logo.jpg\" alt=\"\" width=\"250\" height=\"49\" /></p><p style=\"text-align: right;\">Companyname </p><p style=\"text-align: right;\">adressline 1</p><p style=\"text-align: right;\">12345 city</p><p style=\"text-align: right;\"> </p><p style=\"text-align: left;\">{billingfirstname} {billinglastname}</p><p style=\"text-align: left;\">{billingaddress}</p><p style=\"text-align: left;\">{billingpostcode} {billingcity}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Invoice: {purchase_id}</p><p style=\"text-align: right;\">Date: {date}</p><p style=\"text-align: right;\"> </p><h1 style=\"text-align: left;\">Invoice</h1><p style=\"text-align: left;\">{#productstable#}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Products total: {total_product_price}</p><p style=\"text-align: right;\">Shipping total: {total_shipping}</p><p style=\"text-align: right;\">Tax: {total_tax}</p><p style=\"text-align: right;\">Discount: {coupon_amount}</p><p style=\"text-align: right;\"><strong>Total: {cart_total}</strong></p><p style=\"text-align: right;\"> </p><p style=\"text-align: right;\"> </p><p style=\"text-align: center;\">Thank you for your purchase</p><p>&nbsp;</p>"),
+            'template' => stripslashes("<p>&nbsp;</p><p><img class=\"alignnone size-full wp-image-68\" title=\"logo\" src=\"".HAET_SHOP_STYLING_URL."images/logo.jpg\" alt=\"\" width=\"250\" height=\"49\" style=\"border: 0px none;\"/></p><p style=\"text-align: right;\">Companyname </p><p style=\"text-align: right;\">adressline 1</p><p style=\"text-align: right;\">12345 city</p><p style=\"text-align: right;\"> </p><p style=\"text-align: left;\">{billingfirstname} {billinglastname}</p><p style=\"text-align: left;\">{billingaddress}</p><p style=\"text-align: left;\">{billingpostcode} {billingcity}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Invoice: {purchase_id}</p><p style=\"text-align: right;\">Date: {date}</p><p style=\"text-align: right;\"> </p><h1 style=\"text-align: left;\">Invoice</h1><p style=\"text-align: left;\">{#productstable#}</p><p style=\"text-align: left;\"> </p><p style=\"text-align: right;\">Products total: {total_product_price}</p><p style=\"text-align: right;\">Shipping total: {total_shipping}</p><p style=\"text-align: right;\">Tax: {total_tax}</p><p style=\"text-align: right;\">Discount: {coupon_amount}</p><p style=\"text-align: right;\"><strong>Total: {cart_total}</strong></p><p style=\"text-align: right;\"> </p><p style=\"text-align: right;\"> </p><p style=\"text-align: center;\">Thank you for your purchase</p><p>&nbsp;</p>"),
             'footer' => stripslashes("<p style=\"text-align: center;\">your company | adressline 1 | 12345 city | office@yourcompany.net</p><p style=\"text-align: center;\">Bank account no.: 0000000000000000000000</p>"),
             'css' => "body {\nmargin: 30px;\n}\n/* included unicode fonts:\n*  serif: 'dejavu serif'\n*  sans: 'devavu sans'\n* add your own fonts: http://code.google.com/p/dompdf/wiki/CPDFUnicode#Load_a_font_supporting_your_characters_into_DOMPDF\n*/\nbody, td, th {\nfont-family: 'dejavu serif';\nfont-size: 10px;\n}\np{\nheight:1em;\n}\n\n#products-table{\nwidth:100%;\nborder-collapse:collapse;\npadding-bottom:1px;\nborder-bottom:0.1pt solid #606060;\n}\n#products-table th{\ntext-align:right;\nborder-bottom:0.2pt solid #606060;\n}\n#products-table td{\ntext-align:right;\nborder-bottom:0.1pt solid #606060;\n}\n\n#products-table .product_name{\ntext-align:left;\n}\n/* keeps the footer on its place because dompdf has problems with absolute and fixed positioning*/\n#content-table{\nwidth:100%;\nmargin-top:0;\n}\n#invoice-content{\nheight:230mm;\nvertical-align:top;\n}\n#invoice-footer{\ncolor:#444;\n}\n/* fix for displaying prices with EURO sign */\n.pricedisplay{\nmargin-right:5px;\n}",
             'paper' => 'a4',
@@ -140,6 +140,24 @@ class HaetShopStyling {
         }
     }
     
+    /**
+     * You found the heart of the "licence management"! ;-)
+     * Be fair and don't "hack" it, you'd feel guilty for the rest of your life!
+     * @param string $action
+     * @return boolean 
+     */
+    function isAllowed($action){
+        if( in_array($action,array('resultspage','invoice'))){
+            $keys = get_option('haetshopstyling_keys');
+            if(isset($keys[$action])){
+                if($action=='resultspage' && md5($keys[$action])=='569b0149663dfa296da905ed6f1a5faf')
+                    return true;
+                if($action=='invoice' && md5($keys[$action])=='49cd08f4b9675b3d99c6dd53022cd29e')
+                    return true;
+            }        
+        }
+        return false;
+    }
     
     function printAdminPage(){    
         if ( isset ( $_GET['tab'] ) ) 
@@ -155,6 +173,12 @@ class HaetShopStyling {
                                     $options['template'] = $_POST['haetshopstylingtemplate'];
                                     $options['footer'] = $_POST['haetshopstylingfooter'];
                             }	
+                            if (isset($_POST['haetshopstylingpaper'])) {
+                                    $options['paper'] = $_POST['haetshopstylingpaper'];
+                            }
+                            if (isset($_POST['haetshopstylingfilename'])) {
+                                    $options['filename'] = $_POST['haetshopstylingfilename'];
+                            }
 
             }else if ($tab=='products'){
                             if (isset($_POST['columntitle'])) {
@@ -209,14 +233,6 @@ class HaetShopStyling {
                             if (isset($_POST['resultspage_failed'])) {
                                     $options['resultspage_failed'] = $_POST['resultspage_failed'];
                             }
-            }else if ($tab=='settings'){
-                            if (isset($_POST['haetshopstylingpaper'])) {
-                                    $options['paper'] = $_POST['haetshopstylingpaper'];
-                            }
-                            if (isset($_POST['haetshopstylingfilename'])) {
-                                    $options['filename'] = $_POST['haetshopstylingfilename'];
-                            }
-
             }
             update_option('haetshopstyling_options', $options);
             
@@ -239,8 +255,7 @@ class HaetShopStyling {
                     'mailcontent' => __('Email Content','haetshopstyling'),
                     'invoicetemplate' => __('Invoice Template','haetshopstyling'), 
                     'invoicecss' => __('Invoice CSS','haetshopstyling'),
-                    'resultspage' => __('Transaction Results Page','haetshopstyling'), 
-                    'settings' => __('Settings','haetshopstyling')
+                    'resultspage' => __('Transaction Results Page','haetshopstyling')
             );
         include HAET_SHOP_STYLING_PATH.'views/admin/settings.php';
     
