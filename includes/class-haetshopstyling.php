@@ -163,7 +163,7 @@ class HaetShopStyling {
         if ( isset ( $_GET['tab'] ) ) 
             $tab=$_GET['tab']; 
         else 
-            $tab='invoicetemplate'; 
+            $tab='mailcontent'; 
 
         $options = $this->getOptions();
 
@@ -233,6 +233,28 @@ class HaetShopStyling {
                             if (isset($_POST['resultspage_failed'])) {
                                     $options['resultspage_failed'] = $_POST['resultspage_failed'];
                             }
+            }else if ($tab=='upgrade'){
+                            $keys = get_option('haetshopstyling_keys');
+                            if (!$this->isAllowed('resultspage') && isset($_POST['haetresultspageserial'])) {
+                                    $keys['resultspage'] = $_POST['haetresultspageserial'];
+                                    update_option('haetshopstyling_keys',$keys);
+                                    if ($this->isAllowed('resultspage')){
+                                        echo '<div class="updated"><p><strong>';
+                                                _e("Your serial was accepted!", "haetshopstyling");
+                                        echo '</strong></p></div>';	
+                                    }
+                            }	
+                            if (isset($_POST['haetinvoiceserial'])) {
+                                    $keys['invoice'] = $_POST['haetinvoiceserial'];
+                                    update_option('haetshopstyling_keys',$keys);
+                                    if ($this->isAllowed('invoice')){
+                                        echo '<div class="updated"><p><strong>';
+                                                _e("Your serial was accepted!", "haetshopstyling");
+                                        echo '</strong></p></div>';	
+                                    }
+                            }
+                            
+                            
             }
             update_option('haetshopstyling_options', $options);
             
@@ -249,10 +271,9 @@ class HaetShopStyling {
         add_filter('tiny_mce_before_init', array(&$this,'customizeEditor'));
         
         $tabs = array( 
-                    
-                    'products' => __('Products Table','haetshopstyling'), 
-                    'mailtemplate' => __('Email Template','haetshopstyling'),
                     'mailcontent' => __('Email Content','haetshopstyling'),
+                    'mailtemplate' => __('Email Template','haetshopstyling'),
+                    'products' => __('Products Table','haetshopstyling'), 
                     'invoicetemplate' => __('Invoice Template','haetshopstyling'), 
                     'invoicecss' => __('Invoice CSS','haetshopstyling'),
                     'resultspage' => __('Transaction Results Page','haetshopstyling')

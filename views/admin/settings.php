@@ -50,7 +50,12 @@
                 if(!$this->isAllowed('invoice')){
                     ?>
                     <div class="upgrademessage">
-                        <div style="float:right">
+                        <div style="float:left">
+                            <h4><?php _e('You have not unlocked this feature yet','haetshopstyling'); ?></h4>
+                            <p><?php _e('You can edit and even preview the invoice but it will not be published to your customers.','haetshopstyling'); ?></p>
+                            <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a></p>
+                        </div>
+                        <div style="margin-left:50px; float:left">
                             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                             <input type="hidden" name="cmd" value="_s-xclick">
                             <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
@@ -66,9 +71,8 @@
                             <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
                             </form>
                         </div>
-                        <h4><?php _e('You have not unlocked this feature yet','haetshopstyling'); ?></h4>
-                        <p><?php _e('You can edit and even preview the invoice but it will not be published to your customers.','haetshopstyling'); ?></p>
-                        <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a>
+                        
+                        <div style="clear:both"> </div>
                     </div>
                     <?php
                 }
@@ -328,6 +332,35 @@
 <?php 
             break;
             case 'invoicecss':
+                if(!$this->isAllowed('invoice')){
+                    ?>
+                    <div class="upgrademessage">
+                        <div style="float:left">
+                            <h4><?php _e('You have not unlocked this feature yet','haetshopstyling'); ?></h4>
+                            <p><?php _e('You can edit and even preview the invoice but it will not be published to your customers.','haetshopstyling'); ?></p>
+                            <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a></p>
+                        </div>
+                        <div style="margin-left:50px; float:left">
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                            <input type="hidden" name="cmd" value="_s-xclick">
+                            <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
+                            <table>
+                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection</td></tr><tr><td><select name="os0">
+                                    <option value="results pages">results pages $5,00 USD</option>
+                                    <option value="PDF invoices">PDF invoices $20,00 USD</option>
+                                    <option value="all together">all together $22,00 USD</option>
+                            </select> </td></tr>
+                            </table>
+                            <input type="hidden" name="currency_code" value="USD">
+                            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+                            </form>
+                        </div>
+                        
+                        <div style="clear:both"> </div>
+                    </div>
+                    <?php
+                }
 ?>
 
     <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
@@ -374,6 +407,35 @@
 <?php 
             break;        
             case 'resultspage' :
+                if(!$this->isAllowed('invoice')){
+                    ?>
+                    <div class="upgrademessage">
+                        <div style="float:left">
+                            <h4><?php _e('You have not unlocked this feature yet','haetshopstyling'); ?></h4>
+                            <p><?php _e('You can edit the settings but it will not be published to your customers.','haetshopstyling'); ?></p>
+                            <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a></p>
+                        </div>
+                        <div style="margin-left:50px; float:left">
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                            <input type="hidden" name="cmd" value="_s-xclick">
+                            <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
+                            <table>
+                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection</td></tr><tr><td><select name="os0">
+                                    <option value="results pages">results pages $5,00 USD</option>
+                                    <option value="PDF invoices">PDF invoices $20,00 USD</option>
+                                    <option value="all together">all together $22,00 USD</option>
+                            </select> </td></tr>
+                            </table>
+                            <input type="hidden" name="currency_code" value="USD">
+                            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+                            </form>
+                        </div>
+                        
+                        <div style="clear:both"> </div>
+                    </div>
+                    <?php
+                }
 ?>
             <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
                 <h2><?php _e('Results Page - payment successful','haetshopstyling'); ?></h2>
@@ -414,7 +476,69 @@
                  ?>
 <?php 
             break;        
-
+            case 'upgrade' :
+                if(!$this->isAllowed('invoice') || !$this->isAllowed('resultspage')){
+                    ?>
+                    <div class="upgrademessage">
+                        <div style="float:left">
+                            <h4><?php _e('You have not unlocked all features','haetshopstyling'); ?></h4>
+                        </div>
+                        <div style="margin-left:50px; float:left">
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                            <input type="hidden" name="cmd" value="_s-xclick">
+                            <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
+                            <table>
+                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection</td></tr><tr><td><select name="os0">
+                                    <option value="results pages">results pages $5,00 USD</option>
+                                    <option value="PDF invoices">PDF invoices $20,00 USD</option>
+                                    <option value="all together">all together $22,00 USD</option>
+                            </select> </td></tr>
+                            </table>
+                            <input type="hidden" name="currency_code" value="USD">
+                            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+                            </form>
+                        </div>
+                        <div style="clear:both"> </div>
+                    </div>
+                    <?php
+                }
+                ?>
+                <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+               
+                 
+                <h2><?php _e('Upgrade','haetshopstyling'); ?></h2>
+                                
+                <?php
+                    $keys = get_option('haetshopstyling_keys');
+                ?>
+                <table class="form-table">
+                    <tbody>
+                        <tr valign="top">
+                            <th scope="row"><label for="haetresultspageserial"><?php _e('Serial for transaction results','haetshopstyling'); ?></label></th>
+                            <td>
+                                <?php if($this->isAllowed('resultspage')): ?>
+                                    <input type="text" disabled="disabled" class="regular-text" id="haetresultspageserial" name="haetresultspageserial" value="<?php echo 'XXXX-XXXX-XXXX-XXXX'.substr($keys['resultspage'],-5); ?>">
+                                <?php else: ?>
+                                    <input type="text" class="regular-text" id="haetresultspageserial" name="haetresultspageserial" value="">
+                                <?php endif ?>    
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row"><label for="haetinvoiceserial"><?php _e('Serial for PDF invoices','haetshopstyling'); ?></label></th>
+                            <td>
+                                <?php if($this->isAllowed('invoice')): ?>
+                                    <input type="text" disabled="disabled" class="regular-text" id="haetinvoiceserial" name="haetinvoiceserial" value="<?php echo 'XXXX-XXXX-XXXX-XXXX'.substr($keys['invoice'],-5); ?>">
+                                <?php else: ?>
+                                    <input type="text" class="regular-text" id="haetinvoiceserial" name="haetinvoiceserial" value="">
+                                <?php endif ?>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                 
+<?php 
+            break;
 }//switch
             
 ?>
