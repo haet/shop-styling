@@ -16,12 +16,14 @@
     $body = preg_replace('#\<img(.*)src=\'.*'.$url.'(.*)\'(.*)\>#Uis', '<img$1src="'.$base_path.'$2"$3\>', $body);
     $footer = preg_replace('#\<img(.*)src=\".*'.$url.'(.*)\"(.*)\>#Uis', '<img$1src="'.$base_path.'$2"$3\>', $footer);
     $footer = preg_replace('#\<img(.*)src=\'.*'.$url.'(.*)\'(.*)\>#Uis', '<img$1src="'.$base_path.'$2"$3\>', $footer);
-
+    
     foreach ($params AS $param){
         $body = str_replace('{'.$param["unique_name"].'}', $param['value'], $body);
         $footer = str_replace('{'.$param["unique_name"].'}', $param['value'], $footer);
     }
     
+    //remove "downloads" column in PDF
+    $body = preg_replace('#\<t[d|h] class=\'download\'>.*</t[d|h]>#Uis', '', $body);
     
     $html='<html><head>
             <meta http-equiv="content-type" content="text/html; charset=utf-8"/>

@@ -337,41 +337,51 @@ class HaetShopStyling {
             }
 
 
-            $items = $this->getCartItems($purchase_id);
-
-
-            //GENERATE PRODUCTS TABLE
-            $products_table = '<table id="products-table">';
-            $products_table .= '<tr>';
-            for ($col=1;$col < count($options["columnfield"]); $col++){
-                if($options["columnfield"][$col]!='')
-                    $products_table .= "<th class='".$options["columnfield"][$col]."'>".$options["columntitle"][$col]."</th>";
-            }
-            $products_table .= '</tr>';
-            $row=0;
-
-            foreach ($items AS $item){
-                $item['item_number']=$row+1;
-                $item['price_without_tax']= $this->currencyDisplay( $item['product_price']*$item['product_quantity']-$item['product_tax_charged']/$item['product_quantity'] );
-                $item['price_sum']= $this->currencyDisplay( $item['product_price']*$item['product_quantity'] ) ;
-                $item['price_sum_without_tax']= $this->currencyDisplay( $item['price_sum']-$item['product_tax_charged'] );
-                $item['product_price']= $this->currencyDisplay( $item['product_price'] ) ;
-
-                $products_table .= '<tr>';
-                for ($col=1;$col < count($options["columnfield"]); $col++){
-                    if($options["columnfield"][$col]!='')
-                        $products_table .= "<td class='".$options["columnfield"][$col]."'>".$item[$options["columnfield"][$col]]."</td>";
-                }
-                $products_table .= '</tr>';     
-                $row++;
-            }
-            $products_table .= '</table>';
-            $params[]= array('unique_name'=>'#productstable#','value'=>$products_table);
+            
             $params[]= array('unique_name'=>'payment_instructions','value'=>strip_tags( stripslashes( get_option( 'payment_instructions' ) ) ));
             set_transient( "haet_cart_params_{$purchase_id}", $params, 60 * 60 * 24 * 30 );
         }else{ // no products in cart -> page not current
             $params=get_transient("haet_cart_params_{$purchase_id}");
         }
+
+        
+
+        //GENERATE PRODUCTS TABLE outside the if statement
+        // this cannot be cached in a transient because of the download links
+        $items = $this->getCartItems($purchase_id);
+        $products_table = '<table id="products-table">';
+        $products_table .= '<tr>';
+        for ($col=1;$col < count($options["columnfield"]); $col++){
+            if($options["columnfield"][$col]!='' && !($options["columnfield"][$col]=='download' && $this->getProcessedState($purchase_id)!=3))
+                $products_table .= "<th class='".$options["columnfield"][$col]."'>".$options["columntitle"][$col]."</th>";
+        }
+        $products_table .= '</tr>';
+        $row=0;
+
+        foreach ($items AS $item){
+            $item['item_number']=$row+1;
+            $item['price_without_tax']= $this->currencyDisplay( $item['product_price']*$item['product_quantity']-$item['product_tax_charged']/$item['product_quantity'] );
+            $item['price_sum']= $this->currencyDisplay( $item['product_price']*$item['product_quantity'] ) ;
+            $item['price_sum_without_tax']= $this->currencyDisplay( $item['price_sum']-$item['product_tax_charged'] );
+            $item['product_price']= $this->currencyDisplay( $item['product_price'] ) ;
+
+            $products_table .= '<tr>';
+            for ($col=1;$col < count($options["columnfield"]); $col++){
+                if($options["columnfield"][$col]=='download' ){
+                    if($this->getProcessedState($purchase_id)==3 && isset($item['download'])){
+                        $products_table .= "<td class='".$options["columnfield"][$col]."'>";
+                        foreach($item['download'] AS $download)
+                            $products_table .= '<a href="'.$download.'"><img src="'.HAET_SHOP_STYLING_URL.'images/download.png" style="margin-bottom: -5px;" alt="download"></a><br/>';
+                        $products_table .= "</td>";
+                    }
+                }else if($options["columnfield"][$col]!='')
+                    $products_table .= "<td class='".$options["columnfield"][$col]."'>".$item[$options["columnfield"][$col]]."</td>";
+            }
+            $products_table .= '</tr>';     
+            $row++;
+        }
+        $products_table .= '</table>';
+        $params[]= array('unique_name'=>'#productstable#','value'=>$products_table);
         return $params;
     }
     
@@ -379,6 +389,7 @@ class HaetShopStyling {
         global $wpdb;
 
         $form_sql = "SELECT id,
+                            prodid,
                             name AS product_name,
                             price AS product_price,
                             pnp AS product_pnp,
@@ -388,8 +399,36 @@ class HaetShopStyling {
                             quantity AS product_quantity
                         FROM `".$wpdb->prefix."wpsc_cart_contents` 
                         WHERE  `purchaseid` = ".(int)$purchase_id;
-        return $wpdb->get_results($form_sql,ARRAY_A);
-        //wpsc-user-log-functions 306
+        $cartitems = $wpdb->get_results($form_sql,ARRAY_A);
+        if($this->getProcessedState($purchase_id)==3){
+            for($i=0;$i<count($cartitems);$i++){
+                $cartitems[$i]['download']=$this->getDownloadLinks($purchase_id,$cartitems[$i]['prodid']);
+            }
+        }
+
+        return $cartitems;
+    }
+    
+    function getProcessedState($purchase_id){
+        global $wpdb;
+        return $wpdb->get_var("SELECT `processed` FROM ".WPSC_TABLE_PURCHASE_LOGS." WHERE id=".$purchase_id);
+    }
+    
+    function getDownloadLinks($purchase_id,$product_id){
+        global $wpdb;
+        $sql = "SELECT * FROM `" . WPSC_TABLE_DOWNLOAD_STATUS . "` WHERE `purchid` = ".$purchase_id." AND product_id = " . $product_id . " AND `active` IN ('1') ORDER BY `datetime` DESC";
+        $products = $wpdb->get_results( $sql, ARRAY_A );
+        $products = apply_filters( 'wpsc_has_downloads_products', $products );
+
+        $downloads=array();
+        foreach ( (array)$products as $key => $product ) {
+            if( empty( $product['uniqueid'] ) ) { // if the uniqueid is not equal to null, its "valid", regardless of what it is
+                        $downloads[] = site_url() . "/?downloadid=" . $product['id'];
+                } else {
+                        $downloads[] = site_url() . "/?downloadid=" . $product['uniqueid'];
+                }
+        }
+        return $downloads;
     }
     
     /* use this function up to wpsc 3.8.5 */ 
