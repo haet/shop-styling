@@ -56,11 +56,13 @@
                             <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a></p>
                         </div>
                         <div style="margin-left:50px; float:left">
+                            <h4><?php _e('Get your licence key!','haetshopstyling'); ?></h4>
+                            <p><?php _e('Valid for all plugin updates.','haetshopstyling'); ?></p>
                             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                             <input type="hidden" name="cmd" value="_s-xclick">
                             <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
                             <table>
-                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection</td></tr><tr><td><select name="os0">
+                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection:</td></tr><tr><td><select name="os0">
                                     <option value="results pages">results pages $5,00 USD</option>
                                     <option value="PDF invoices">PDF invoices $20,00 USD</option>
                                     <option value="all together">all together $22,00 USD</option>
@@ -341,11 +343,13 @@
                             <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a></p>
                         </div>
                         <div style="margin-left:50px; float:left">
+                            <h4><?php _e('Get your licence key!','haetshopstyling'); ?></h4>
+                            <p><?php _e('Valid for all plugin updates.','haetshopstyling'); ?></p>
                             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                             <input type="hidden" name="cmd" value="_s-xclick">
                             <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
                             <table>
-                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection</td></tr><tr><td><select name="os0">
+                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection:</td></tr><tr><td><select name="os0">
                                     <option value="results pages">results pages $5,00 USD</option>
                                     <option value="PDF invoices">PDF invoices $20,00 USD</option>
                                     <option value="all together">all together $22,00 USD</option>
@@ -407,7 +411,7 @@
 <?php 
             break;        
             case 'resultspage' :
-                if(!$this->isAllowed('invoice')){
+                if(!$this->isAllowed('resultspage')){
                     ?>
                     <div class="upgrademessage">
                         <div style="float:left">
@@ -416,6 +420,8 @@
                             <p><a href="?page=wp-e-commerce-shop-styling.php&tab=upgrade"><?php _e('Enter your serial number','haetshopstyling'); ?></a></p>
                         </div>
                         <div style="margin-left:50px; float:left">
+                            <h4><?php _e('Get your licence key!','haetshopstyling'); ?></h4>
+                            <p><?php _e('Valid for all plugin updates.','haetshopstyling'); ?></p>
                             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                             <input type="hidden" name="cmd" value="_s-xclick">
                             <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
@@ -484,11 +490,13 @@
                             <h4><?php _e('You have not unlocked all features','haetshopstyling'); ?></h4>
                         </div>
                         <div style="margin-left:50px; float:left">
+                            <h4><?php _e('Get your licence key!','haetshopstyling'); ?></h4>
+                            <p><?php _e('Valid for all plugin updates.','haetshopstyling'); ?></p>
                             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                             <input type="hidden" name="cmd" value="_s-xclick">
                             <input type="hidden" name="hosted_button_id" value="LJJ5TL4GGZATY">
                             <table>
-                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection</td></tr><tr><td><select name="os0">
+                            <tr><td><input type="hidden" name="on0" value="feature selection">feature selection:</td></tr><tr><td><select name="os0">
                                     <option value="results pages">results pages $5,00 USD</option>
                                     <option value="PDF invoices">PDF invoices $20,00 USD</option>
                                     <option value="all together">all together $22,00 USD</option>

@@ -79,7 +79,9 @@ class HaetShopStyling {
     
     function sendInvoiceMail($invoice_params){
         //$invoice_params  Array containing (int)purchase_id, (object)cart_item and (object)purchase_log
-
+        if(!$this->isAllowed('invoice'))
+            return false;
+        
         $purchase_id=$invoice_params['purchase_id'];
         $sessionid = $invoice_params['purchase_log']['sessionid']; 
         //global $purchase_log;
@@ -135,8 +137,8 @@ class HaetShopStyling {
                 add_filter('wp_mail_content_type',create_function('', 'return "text";'));        
             } 
         
-        
-            $this->transactionResultsPage($options,$params);
+            if($this->isAllowed('resultspage'))
+                $this->transactionResultsPage($options,$params);
         }
     }
     
@@ -487,7 +489,7 @@ class HaetShopStyling {
     }
     
     /* use this function for wpsc 3.8.9 */
-    function transactionResultsFilter($output, $notification){
+    function transactionResultsFilter($output){
         $purchase_log = new WPSC_Purchase_Log( $_GET['sessionid'], 'sessionid' );
         $options = $this->getOptions();
         $params = $this->getBillingData($purchase_log->get('id'),$options);
@@ -539,7 +541,7 @@ class HaetShopStyling {
             $params = $this->getBillingData($purchase_id,$options);
             if(isset($_GET['email_buyer_id']) || !get_transient( "{$purchase_id}_invoice_email_sent") ){ //if "resend receipt to buyer"
                 $filename = $options['filename'].'-'.$purchase_id.'.pdf';
-                if ( file_exists(HAET_INVOICE_PATH.$filename) ){
+                if ( $this->isAllowed('invoice') && file_exists(HAET_INVOICE_PATH.$filename) ){
                     $attachments=array(HAET_INVOICE_PATH.$filename);
                     set_transient( "{$purchase_id}_invoice_email_sent", true, 60 * 60 * 24 * 30 );
                 }

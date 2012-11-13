@@ -1,6 +1,0 @@
-in den Purchase-Logs:
-Rechnung erneut senden schreibt die Rechnung in die Mail und fügt ein leeres PDF an
-Statusänderungen senden z.T. textmails mit uninterpretiertem html-code
-
-weiter beim switch in styleMails
-(nur mehr tracking mail -> in gedit ist dazu gerade eine Suche um das Mail und den Wert als Parameter zu finden)
